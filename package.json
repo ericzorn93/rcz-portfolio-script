@@ -1,0 +1,13 @@
+{
+  "name": "rcz-portfolio-script",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Eric Zorn",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/nodemon": "^1.19.1",
+    "nodemon": "^2.0.12",
+    "ts-node": "^10.1.0",
+    "typescript": "^4.3.5"
+  }
+}
