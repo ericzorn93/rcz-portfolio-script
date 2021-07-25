@@ -9,6 +9,7 @@
     "bundle": "npm run build && pkg dist/main.js --output=\"rcz-portfolio\"",
     "clean": "nexe dist/main.js --clean",
     "start": "node dist/main.js",
+    "start:dev": "ts-node src/main.ts --watch",
     "start:bundle": "npm run bundle && ./rcz-portfolio"
   },
   "devDependencies": {
