@@ -6,7 +6,7 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist/ && tsc --pretty",
-    "bundle": "npm run build && pkg dist/main.js --output=\"rcz-portfolio\"",
+    "bundle": "npm run build && pkg dist/main.js --output=\"rcz-portfolio\" && chmod +x \"./rcz-portfolio\"",
     "clean": "nexe dist/main.js --clean",
     "start": "node dist/main.js",
     "start:dev": "npm run generate:types && ts-node src/main.ts --watch",
