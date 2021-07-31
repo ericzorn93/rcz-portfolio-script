@@ -1,7 +1,21 @@
 import axios, { AxiosInstance } from "axios";
 import { red } from "chalk";
+import ora from "ora";
 
 export class CustomCEFHttpService {
+  /**
+   * CEF Connect API Instance that is using
+   * Axios for data fetching to our custom API
+   * that is hosted on heroku. This API proxies to
+   * the CEF Connect API and performs the necessary
+   * custom calculations for our portfolio.
+   *
+   * @readonly
+   * @private
+   * @static
+   * @type {AxiosInstance}
+   * @memberof CustomCEFHttpService
+   */
   private static get cefApi(): AxiosInstance {
     return axios.create({
       baseURL: "https://rcz-portfolio.herokuapp.com",
@@ -9,6 +23,27 @@ export class CustomCEFHttpService {
         Accept: "application/json",
       },
     });
+  }
+
+  /**
+   * Get ora loading spinner to determine
+   * when the client is fetching data from the API
+   * in order to indicate to the user to wait.
+   *
+   * @private
+   * @static
+   * @param {ora.Color} spinnerColor
+   * @param {string} [message="Loading..."]
+   * @return {*}  {ora.Ora}
+   * @memberof CustomCEFHttpService
+   */
+  private static getLoadingSpinner(
+    spinnerColor: ora.Color,
+    message: string = "Loading..."
+  ): ora.Ora {
+    const spinner = ora(message).start();
+    spinner.color = spinnerColor;
+    return spinner;
   }
 
   /**
@@ -20,13 +55,20 @@ export class CustomCEFHttpService {
    * @memberof CustomCEFHttpService
    */
   public static async getCEFTickerSymbols(): Promise<string[]> {
+    const spinner = CustomCEFHttpService.getLoadingSpinner(
+      "green",
+      "Loading all ticker symbols from CEF Connect..."
+    );
+
     try {
       const { data: allSymbols } = await this.cefApi.get<string[]>(
         "/v1/cef-connect/symbols"
       );
+      spinner.stop();
       return allSymbols;
     } catch (err) {
       console.error(red("Cannot fetch symbols"));
+      spinner.stop();
       process.exit(1);
     }
   }
@@ -46,6 +88,11 @@ export class CustomCEFHttpService {
     moneyInvested: number = 1000,
     tickerSymbols: string[] = []
   ): Promise<any> {
+    const spinner = CustomCEFHttpService.getLoadingSpinner(
+      "green",
+      "Loading CEF Connect with Custom Daily Prices..."
+    );
+
     // Accepts the list of incoming ticker symbols and maps them to an uppercase csv string
     let mappedSymbols: string;
     if (!tickerSymbols || !tickerSymbols.length) {
@@ -65,9 +112,11 @@ export class CustomCEFHttpService {
         }
       );
 
+      spinner.stop();
       return data;
     } catch (err) {
       console.error(red("Cannot fetch closed end fund data at this time"));
+      spinner.stop();
       process.exit(1);
     }
   }
