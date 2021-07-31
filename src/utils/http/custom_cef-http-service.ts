@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from "axios";
+import { red } from "chalk";
 
 export class CustomCEFHttpService {
   private static get cefApi(): AxiosInstance {
@@ -25,7 +26,7 @@ export class CustomCEFHttpService {
       );
       return allSymbols;
     } catch (err) {
-      console.error("Cannot fetch symbols");
+      console.error(red("Cannot fetch symbols"));
       process.exit(1);
     }
   }
@@ -45,6 +46,7 @@ export class CustomCEFHttpService {
     moneyInvested: number = 1000,
     tickerSymbols: string[] = []
   ): Promise<any> {
+    // Accepts the list of incoming ticker symbols and maps them to an uppercase csv string
     let mappedSymbols: string;
     if (!tickerSymbols || !tickerSymbols.length) {
       mappedSymbols = "";
@@ -65,7 +67,7 @@ export class CustomCEFHttpService {
 
       return data;
     } catch (err) {
-      console.error("Cannot fetch closed end fund data at this time");
+      console.error(red("Cannot fetch closed end fund data at this time"));
       process.exit(1);
     }
   }
