@@ -29,4 +29,44 @@ export class CustomCEFHttpService {
       process.exit(1);
     }
   }
+
+  /**
+   * Accepts the income list of preferred
+   * ticker symbols for each closed end fund, as
+   * well as the money that the person prefers to invest
+   *
+   * @static
+   * @param {number} [moneyInvested=1000]
+   * @param {string[]} [tickerSymbols=[]]
+   * @return {*}  {Promise<any>}
+   * @memberof CustomCEFHttpService
+   */
+  public static async getCefCustomDailyPrices(
+    moneyInvested: number = 1000,
+    tickerSymbols: string[] = []
+  ): Promise<any> {
+    let mappedSymbols: string;
+    if (!tickerSymbols || !tickerSymbols.length) {
+      mappedSymbols = "";
+    } else {
+      mappedSymbols = tickerSymbols.map((sym) => sym.toUpperCase()).join(",");
+    }
+
+    try {
+      const { data } = await this.cefApi.get(
+        "/v1/cef-connect/custom-daily-prices",
+        {
+          params: {
+            moneyInvested,
+            tickerSymbols: mappedSymbols,
+          },
+        }
+      );
+
+      return data;
+    } catch (err) {
+      console.error("Cannot fetch closed end fund data at this time");
+      process.exit(1);
+    }
+  }
 }
