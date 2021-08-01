@@ -1,3 +1,6 @@
+import { green } from "chalk";
+
+import { CSV } from "./steps/CSV";
 import { UserPrompts } from "./steps/UserPrompts";
 
 async function main(): Promise<void> {
@@ -9,6 +12,13 @@ async function main(): Promise<void> {
   await userPrompts.getTickerSymbols();
   await userPrompts.getCustomDailyPriceData();
   await userPrompts.getTickersWithSelectedProperties();
+
+  // Parse and Generate CSV File
+  const csv = new CSV(userPrompts.selectedDailyPrices);
+  await csv.generateCSV();
+  console.log(
+    green("Finished Generating CSV File with Closed-End Fund Data...")
+  );
 }
 
 main();
