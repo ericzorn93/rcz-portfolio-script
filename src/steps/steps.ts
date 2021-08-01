@@ -51,7 +51,7 @@ export class Steps {
    * @type {(CustomDailyPrice[] | Partial<CustomDailyPrice[]>)}
    * @memberof Steps
    */
-  public selectedDailyPrices: CustomDailyPrice[] | Partial<CustomDailyPrice[]> =
+  public selectedDailyPrices: CustomDailyPrice[] | Partial<CustomDailyPrice>[] =
     [];
 
   /**
@@ -175,16 +175,16 @@ export class Steps {
    * @memberof Steps
    */
   public async getTickersWithSelectedProperties(): Promise<
-    CustomDailyPrice[] | Partial<CustomDailyPrice[]>
+    Partial<CustomDailyPrice>[]
   > {
     // Set of unique keys for each custom daily price from CEF Connect
-    const combinedProperties = new Set<keyof CustomDailyPrice>();
+    const allDailyPriceProperties = new Set<keyof CustomDailyPrice>();
 
     // Add all custom daily price keys to the set
     this.customDailyPrices.forEach((customDailyPrice) => {
       Object.keys(customDailyPrice).forEach((key) => {
         // Add unique key to the set
-        combinedProperties.add(key as keyof CustomDailyPrice);
+        allDailyPriceProperties.add(key as keyof CustomDailyPrice);
       });
     });
 
@@ -200,22 +200,62 @@ export class Steps {
 
     // If all properties are selected, select each property and include daily price
     if (useAllProperties) {
-      const dailyPrices: CustomDailyPrice[] = [];
-
-      this.customDailyPrices.forEach((dailyPrice) => {
-        const filteredPriceWithProps: CustomDailyPrice = {} as CustomDailyPrice;
-
-        combinedProperties.forEach((prop) => {
-          (filteredPriceWithProps as any)[prop] = dailyPrice[prop];
-        });
-
-        dailyPrices.push(filteredPriceWithProps);
-      });
-
+      const dailyPrices: Partial<CustomDailyPrice>[] = this.constructCEFPrice(
+        Array.from(allDailyPriceProperties)
+      );
       this.selectedDailyPrices = dailyPrices;
+
       return dailyPrices;
     }
 
-    return [];
+    // Obtain custom properties to build the object
+    const { chosenProperties } = await inquirer.prompt<{
+      chosenProperties: (keyof CustomDailyPrice)[];
+    }>({
+      type: "checkbox",
+      name: "chosenProperties",
+      default: [...allDailyPriceProperties],
+      message:
+        "Please select properties you would like to use from each Close-End Fund...",
+      choices: Array.from(allDailyPriceProperties).map((propName) => ({
+        name: propName,
+        checked: false,
+        value: propName,
+      })),
+    });
+
+    const dailyPrices: Partial<CustomDailyPrice>[] =
+      this.constructCEFPrice(chosenProperties);
+    this.selectedDailyPrices = dailyPrices;
+
+    return dailyPrices;
+  }
+
+  /**
+   * Loops over all properties that are found from each Closed-End Fund
+   * and then builds an array of custom daily price object partials
+   * with only the requested selected prop names.
+   *
+   * @private
+   * @param {(keyof CustomDailyPrice)[]} selectedProps
+   * @return {*}  {Partial<CustomDailyPrice>[]}
+   * @memberof Steps
+   */
+  private constructCEFPrice(
+    selectedProps: (keyof CustomDailyPrice)[]
+  ): Partial<CustomDailyPrice>[] {
+    if (!selectedProps.length) {
+      return [];
+    }
+
+    return this.customDailyPrices.map((dailyPrice) => {
+      return selectedProps.reduce(
+        (acc, propName) => ({
+          ...acc,
+          [propName]: dailyPrice[propName] ?? null,
+        }),
+        {} as Partial<CustomDailyPrice>
+      );
+    }) as Partial<CustomDailyPrice>[];
   }
 }
