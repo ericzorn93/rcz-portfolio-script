@@ -1,10 +1,7 @@
 import inquirer from "inquirer";
 
-import { components } from "../types/swaggerTypes";
+import { CustomDailyPrice } from "../types/mappedTypes";
 import { CustomCEFHttpService } from "../utils/http/custom_cef-http-service";
-
-// Map the type from the swagger documentation
-type CustomDailyPrice = components["schemas"]["CustomCEFDailyPrice"];
 
 export class UserPrompts {
   /**
@@ -158,9 +155,7 @@ export class UserPrompts {
    *   >}
    * @memberof UserPrompts
    */
-  public async getCustomDailyPriceData(): Promise<
-    components["schemas"]["CustomCEFDailyPrice"][]
-  > {
+  public async getCustomDailyPriceData(): Promise<CustomDailyPrice[]> {
     const dailyPriceData = await CustomCEFHttpService.getCefCustomDailyPrices(
       this.moneyInvested,
       this.tickerSymbols

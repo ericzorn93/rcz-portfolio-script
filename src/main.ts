@@ -9,7 +9,6 @@ async function main(): Promise<void> {
   await userPrompts.getTickerSymbols();
   await userPrompts.getCustomDailyPriceData();
   await userPrompts.getTickersWithSelectedProperties();
-  console.log(userPrompts.selectedDailyPrices);
 }
 
 main();
