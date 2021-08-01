@@ -21,7 +21,7 @@ export class CSV {
     // New File Name
     const now = new Date();
     const currentMonth = now.getMonth() + 1;
-    const today = now.getDate() + 1;
+    const today = now.getDate();
     const year = now.getFullYear();
     const hour = now.getHours();
     const minutes = now.getMinutes();

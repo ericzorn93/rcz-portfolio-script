@@ -130,6 +130,14 @@ export class UserPrompts {
       message:
         "Please enter all desired CEF ticker symbols in CSV format (ABC,DEF)...",
       validate: (input: string) => {
+        // Split tickers on comma
+        const splitInput = input.split(",");
+
+        // Only one ticker symbol
+        if (splitInput.length === 1) {
+          return true;
+        }
+
         const csvRegex = /([A-Z,]+)/g;
 
         return csvRegex.test(input);
