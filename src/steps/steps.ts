@@ -129,8 +129,8 @@ export class Steps {
     // Only include valid custom provided ticker symbols that exist from CEF connect data
     const filteredSymbols = selectedTickerSymbols
       .split(",")
-      .filter((sym) => allTickerSymbols.includes(sym.toUpperCase()))
-      .map((sym) => sym.toUpperCase());
+      .map((sym) => sym.toUpperCase())
+      .filter((sym) => allTickerSymbols.includes(sym));
 
     this.tickerSymbols = filteredSymbols;
     return filteredSymbols;
