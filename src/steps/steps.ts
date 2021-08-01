@@ -2,6 +2,7 @@ import inquirer from "inquirer";
 import { components } from "../types/swaggerTypes";
 import { CustomCEFHttpService } from "../utils/http/custom_cef-http-service";
 
+type CustomDailyPrice = components["schemas"]["CustomCEFDailyPrice"];
 export class Steps {
   /**
    * Singleton member of the steps
@@ -39,10 +40,19 @@ export class Steps {
    * based on the selected money invested and all chosen ticker
    * symbols from CEF connect.
    *
-   * @type {components['schemas']['CustomCEFDailyPrice'][]}
+   * @type {CustomDailyPrice[]}
    * @memberof Steps
    */
-  public customDailyPrices: components["schemas"]["CustomCEFDailyPrice"][] = [];
+  public customDailyPrices: CustomDailyPrice[] = [];
+
+  /**
+   * List of custom daily prices with properties desired
+   *
+   * @type {(CustomDailyPrice[] | Partial<CustomDailyPrice[]>)}
+   * @memberof Steps
+   */
+  public selectedDailyPrices: CustomDailyPrice[] | Partial<CustomDailyPrice[]> =
+    [];
 
   /**
    * Obtain singleton insatnce
@@ -155,5 +165,57 @@ export class Steps {
     this.customDailyPrices = dailyPriceData;
 
     return dailyPriceData;
+  }
+
+  /**
+   * Obtains list of custom daily prices with either partial
+   * price properties or all properties from the API
+   *
+   * @return {*}  {Promise<CustomDailyPrice[]>}
+   * @memberof Steps
+   */
+  public async getTickersWithSelectedProperties(): Promise<
+    CustomDailyPrice[] | Partial<CustomDailyPrice[]>
+  > {
+    // Set of unique keys for each custom daily price from CEF Connect
+    const combinedProperties = new Set<keyof CustomDailyPrice>();
+
+    // Add all custom daily price keys to the set
+    this.customDailyPrices.forEach((customDailyPrice) => {
+      Object.keys(customDailyPrice).forEach((key) => {
+        // Add unique key to the set
+        combinedProperties.add(key as keyof CustomDailyPrice);
+      });
+    });
+
+    // Prompt user for properties selected
+    const { useAllProperties } = await inquirer.prompt<{
+      useAllProperties: boolean;
+    }>({
+      type: "confirm",
+      name: "useAllProperties",
+      default: true,
+      message: "Would you like to use all properties from each CEF ticker?",
+    });
+
+    // If all properties are selected, select each property and include daily price
+    if (useAllProperties) {
+      const dailyPrices: CustomDailyPrice[] = [];
+
+      this.customDailyPrices.forEach((dailyPrice) => {
+        const filteredPriceWithProps: CustomDailyPrice = {} as CustomDailyPrice;
+
+        combinedProperties.forEach((prop) => {
+          (filteredPriceWithProps as any)[prop] = dailyPrice[prop];
+        });
+
+        dailyPrices.push(filteredPriceWithProps);
+      });
+
+      this.selectedDailyPrices = dailyPrices;
+      return dailyPrices;
+    }
+
+    return [];
   }
 }

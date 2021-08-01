@@ -8,7 +8,8 @@ async function main(): Promise<void> {
   await steps.getMoneyInvested();
   await steps.getTickerSymbols();
   await steps.getCustomDailyPriceData();
-  console.log(steps.customDailyPrices);
+  await steps.getTickersWithSelectedProperties();
+  console.log(steps.selectedDailyPrices);
 }
 
 main();
