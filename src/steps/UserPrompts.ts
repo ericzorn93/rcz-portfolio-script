@@ -1,19 +1,19 @@
 import inquirer from "inquirer";
-import { components } from "../types/swaggerTypes";
+
+import { CustomDailyPrice } from "../types/mappedTypes";
 import { CustomCEFHttpService } from "../utils/http/custom_cef-http-service";
 
-type CustomDailyPrice = components["schemas"]["CustomCEFDailyPrice"];
-export class Steps {
+export class UserPrompts {
   /**
    * Singleton member of the steps
    * class to preserve state within the terminal instance.
    *
    * @private
    * @static
-   * @type {(Steps | null)}
-   * @memberof Steps
+   * @type {(UserPrompts | null)}
+   * @memberof UserPrompts
    */
-  private static stepsInstance: Steps | null = null;
+  private static stepsInstance: UserPrompts | null = null;
 
   /**
    * Money Invested into each closed end fund.
@@ -22,7 +22,7 @@ export class Steps {
    *
    * @static
    * @type {number}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public moneyInvested: number = 1000;
 
@@ -31,7 +31,7 @@ export class Steps {
    * This list can be custom defined, and or loaded directly from the API.
    *
    * @type {string[]}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public tickerSymbols: string[] = [];
 
@@ -41,7 +41,7 @@ export class Steps {
    * symbols from CEF connect.
    *
    * @type {CustomDailyPrice[]}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public customDailyPrices: CustomDailyPrice[] = [];
 
@@ -49,7 +49,7 @@ export class Steps {
    * List of custom daily prices with properties desired
    *
    * @type {(CustomDailyPrice[] | Partial<CustomDailyPrice[]>)}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public selectedDailyPrices: CustomDailyPrice[] | Partial<CustomDailyPrice>[] =
     [];
@@ -60,15 +60,15 @@ export class Steps {
    *
    * @readonly
    * @static
-   * @type {Steps}
-   * @memberof Steps
+   * @type {UserPrompts}
+   * @memberof UserPrompts
    */
-  public static instance(): Steps {
-    if (!Steps.stepsInstance) {
-      return new Steps();
+  public static instance(): UserPrompts {
+    if (!UserPrompts.stepsInstance) {
+      return new UserPrompts();
     }
 
-    return Steps.stepsInstance;
+    return UserPrompts.stepsInstance;
   }
 
   /**
@@ -77,7 +77,7 @@ export class Steps {
    * that is applied to every Closed-End fund chosen.
    *
    * @return {Promise<number>}  {Promise<number>}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public async getMoneyInvested(): Promise<number> {
     const data = await inquirer.prompt<{ moneyInvested: number }>({
@@ -98,7 +98,7 @@ export class Steps {
    * or custom input their selected ticker symbols.
    *
    * @return {*}  {Promise<string[]>}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public async getTickerSymbols(): Promise<string[]> {
     // Fetch all ticker symbols before requesting them from the user
@@ -153,11 +153,9 @@ export class Steps {
    * @return {*}  {Promise<
    *     components["schemas"]["CustomCEFDailyPrice"][]
    *   >}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
-  public async getCustomDailyPriceData(): Promise<
-    components["schemas"]["CustomCEFDailyPrice"][]
-  > {
+  public async getCustomDailyPriceData(): Promise<CustomDailyPrice[]> {
     const dailyPriceData = await CustomCEFHttpService.getCefCustomDailyPrices(
       this.moneyInvested,
       this.tickerSymbols
@@ -172,7 +170,7 @@ export class Steps {
    * price properties or all properties from the API
    *
    * @return {*}  {Promise<CustomDailyPrice[]>}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   public async getTickersWithSelectedProperties(): Promise<
     Partial<CustomDailyPrice>[]
@@ -239,7 +237,7 @@ export class Steps {
    * @private
    * @param {(keyof CustomDailyPrice)[]} selectedProps
    * @return {*}  {Partial<CustomDailyPrice>[]}
-   * @memberof Steps
+   * @memberof UserPrompts
    */
   private constructCEFPrice(
     selectedProps: (keyof CustomDailyPrice)[]
