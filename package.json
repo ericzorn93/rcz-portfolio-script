@@ -6,11 +6,12 @@
   "license": "MIT",
   "scripts": {
     "build": "rimraf dist/ && tsc --pretty",
-    "bundle": "npm run build && pkg dist/main.js --output=\"rcz-portfolio\"",
+    "bundle": "npm run build && pkg dist/main.js --output=\"rcz-portfolio\" && chmod +x \"./rcz-portfolio\"",
     "clean": "nexe dist/main.js --clean",
     "start": "node dist/main.js",
-    "start:dev": "ts-node src/main.ts --watch",
-    "start:bundle": "npm run bundle && ./rcz-portfolio"
+    "start:dev": "npm run generate:types && ts-node src/main.ts --watch",
+    "start:bundle": "npm run bundle && ./rcz-portfolio",
+    "generate:types": "ts-node scripts/generate-swagger-types.ts"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
@@ -27,6 +28,7 @@
     "axios": "^0.21.1",
     "chalk": "^4.1.2",
     "inquirer": "^8.1.2",
+    "openapi-typescript": "^4.0.2",
     "ora": "^5.4.1",
     "rimraf": "^3.0.2"
   }

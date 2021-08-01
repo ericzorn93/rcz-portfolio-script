@@ -1,6 +1,7 @@
 import axios, { AxiosInstance } from "axios";
 import { red } from "chalk";
 import ora from "ora";
+import { components } from "../../types/swaggerTypes";
 
 export class CustomCEFHttpService {
   /**
@@ -87,7 +88,7 @@ export class CustomCEFHttpService {
   public static async getCefCustomDailyPrices(
     moneyInvested: number = 1000,
     tickerSymbols: string[] = []
-  ): Promise<any> {
+  ): Promise<components["schemas"]["CustomCEFDailyPrice"][]> {
     const spinner = CustomCEFHttpService.getLoadingSpinner(
       "green",
       "Loading CEF Connect with Custom Daily Prices..."
