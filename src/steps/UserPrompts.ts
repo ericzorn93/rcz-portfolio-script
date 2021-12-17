@@ -215,15 +215,16 @@ export class UserPrompts {
     }
 
     // Obtain custom properties to build the object
+    const dailyPricePropertyNames = [...allDailyPriceProperties];
     const { chosenProperties } = await inquirer.prompt<{
       chosenProperties: (keyof CustomDailyPrice)[];
     }>({
       type: "checkbox",
       name: "chosenProperties",
-      default: [...allDailyPriceProperties],
+      default: dailyPricePropertyNames,
       message:
         "Please select properties you would like to use from each Close-End Fund...",
-      choices: Array.from(allDailyPriceProperties).map((propName) => ({
+      choices: dailyPricePropertyNames.map((propName) => ({
         name: propName,
         checked: false,
         value: propName,

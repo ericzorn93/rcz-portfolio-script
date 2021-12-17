@@ -52,7 +52,7 @@ export interface components {
       AMTPercentage: number;
       AverageWeightedMaturity: number;
       ExpenseRatio: number;
-      BaselineExpense: { [key: string]: unknown };
+      BaselineExpense: number;
       TotalAssetsUSDm: number;
       IsLeveraged: boolean;
       IsPriceBelow52WkAvg: boolean;
@@ -120,7 +120,7 @@ export interface components {
       AMTPercentage: number;
       AverageWeightedMaturity: number;
       ExpenseRatio: number;
-      BaselineExpense: { [key: string]: unknown };
+      BaselineExpense: number;
       TotalAssetsUSDm: number;
       IsLeveraged: boolean;
       IsPriceBelow52WkAvg: boolean;
